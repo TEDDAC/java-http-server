@@ -28,17 +28,17 @@ public class Main {
                 while (entree.available() > 0) {
                     stringBuilder.append((char) entree.read());
                 }
-                Request req = new Request(stringBuilder.toString());
                 Response res;
-
-                System.out.println(req.getResourcePath());
-
                 try {
+                    Request req = new Request(stringBuilder.toString());
+
+                    System.out.println(req.getResourcePath());
+
                     String body = server.getPageString(req.getResourcePath());
                     res = new Response(200, "OK", body, req);
                 } catch (FileNotFoundException e){
                     String body = server.getPageString("/error.html");
-                    res = new Response(404, "KO", body, req);
+                    res = new Response(404, "KO", body, null);
                 }
 
 

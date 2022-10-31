@@ -15,7 +15,9 @@ public class Response {
         this.code = code;
         this.message = message;
         this.body = body;
-        this.contentType = req.getContentType();
+        if(req != null){
+            this.contentType = req.getContentType();
+        }
     }
 
     /**
