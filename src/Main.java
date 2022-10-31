@@ -1,29 +1,50 @@
+import elements.Request;
+import elements.Response;
+import elements.Server;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class Main {
+
     public static void main(String[] args) {
+        Server server = new Server();
+        try {
+            server.initialize();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         try {
             ServerSocket ecoute = new ServerSocket(8080);
             while(true) {
-                try (Socket serveur = ecoute.accept()) {
-                    InputStream entree = new DataInputStream(serveur.getInputStream());
-                    OutputStream sortie = new PrintStream(serveur.getOutputStream());
-                    StringBuilder stringBuilder = new StringBuilder();
-                    while (entree.available() > 0) {
-                        stringBuilder.append((char) entree.read());
-                    }
-                    System.out.print(stringBuilder.toString());
-                    sortie.write(("HTTP/1.0 200 OK\n" +
-                            "Content-Type: text/html\n" +
-                            "Content-Length: 13" +
-                            "\n\n" +
-                            "<h1>Hello World !</h1>").getBytes(StandardCharsets.UTF_8));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                Socket serveur = ecoute.accept();
+                InputStream entree = new DataInputStream(serveur.getInputStream());
+                OutputStream sortie = new PrintStream(serveur.getOutputStream());
+                StringBuilder stringBuilder = new StringBuilder();
+                while (entree.available() > 0) {
+                    stringBuilder.append((char) entree.read());
                 }
+                Request req = new Request(stringBuilder.toString());
+                Response res;
+
+                System.out.println(req.getResourcePath());
+
+                try {
+                    String body = server.getPageString(req.getResourcePath());
+                    res = new Response(200, "OK", body);
+                } catch (FileNotFoundException e){
+                    String body = server.getPageString("/error.html");
+                    res = new Response(404, "KO", body);
+                }
+
+
+                sortie.write(res.toBytes());
+
+                System.out.println(res);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
