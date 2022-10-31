@@ -11,10 +11,11 @@ public class Response {
     private final String separator = "\n";
     private String body;
 
-    public Response(int code, String message, String body) {
+    public Response(int code, String message, String body, Request req) {
         this.code = code;
         this.message = message;
         this.body = body;
+        this.contentType = req.getContentType();
     }
 
     /**

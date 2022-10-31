@@ -35,10 +35,10 @@ public class Main {
 
                 try {
                     String body = server.getPageString(req.getResourcePath());
-                    res = new Response(200, "OK", body);
+                    res = new Response(200, "OK", body, req);
                 } catch (FileNotFoundException e){
                     String body = server.getPageString("/error.html");
-                    res = new Response(404, "KO", body);
+                    res = new Response(404, "KO", body, req);
                 }
 
 
